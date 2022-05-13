@@ -22,17 +22,11 @@ def validate_input(task):
     rc = call(cmd, shell=True)
     return {'status': 'COMPLETED', 'output': {'isPackageInstalled': 'True'}, 'logs': ['Package installation complete']}
 
-def rollback(task):
-    cmd = "./rollback.sh"
-    rc = call(cmd, shell=True)
-    return {'status': 'COMPLETED', 'output': {'isRollBacked': 'True'}, 'logs': ['Rollback complete']}
-
 def main():
     print('Starting Hi Bye')
     cc = ConductorWorker('http://172.29.112.149:8080/api', 1, 0.1)
     cc.start('install_packages', install_packages, False)
     cc.start('deploy_task', deploy_task, False)
-    cc.start('validate_input', validate_input, False)
-    cc.start('rollback', rollback, True)
+    cc.start('validate_input', validate_input, True)
 if __name__ == '__main__':
     main()
