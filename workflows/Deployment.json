@@ -24,11 +24,11 @@
       "name": "validate_input",
       "taskReferenceName": "Validate_Helm_Chart",
       "inputParameters": {
-        "chartVersion": "1.1.1",
-        "acrName": "coredataplatformtest",
-        "acrSubscription": "coredataplatformtest",
-        "helmChartName": "azure-vote",
-        "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+        "chartVersion": "<HELM_CHART_VERSION>",
+        "acrName": "<ACR_NAME>",
+        "acrSubscription": "<AZURE_SUBSCRIPTION>",
+        "helmChartName": "<HELM_CHART_NAME>",
+        "tenantId": "<AZURE_TENANT_ID>"
       },
       "type": "SIMPLE",
       "decisionCases": {},
