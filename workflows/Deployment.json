@@ -1,0 +1,184 @@
+{
+  "createTime": 1652426138095,
+  "updateTime": 1652435368967,
+  "name": "Deployment",
+  "description": "Deployment",
+  "version": 11,
+  "tasks": [
+    {
+      "name": "install_packages",
+      "taskReferenceName": "Initialize_Environment",
+      "inputParameters": {},
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "validate_input",
+      "taskReferenceName": "Validate_Helm_Chart",
+      "inputParameters": {
+        "chartVersion": "1.1.1",
+        "acrName": "coredataplatformtest",
+        "acrSubscription": "coredataplatformtest",
+        "helmChartName": "azure-vote",
+        "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+      },
+      "type": "SIMPLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "deployment",
+      "taskReferenceName": "deployment_ref",
+      "inputParameters": {
+        "chartVersion": "1.1.1"
+      },
+      "type": "SUB_WORKFLOW",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "subWorkflowParam": {
+        "name": "Regular_Deployment",
+        "version": 1
+      },
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "decision_task",
+      "taskReferenceName": "Is_Deployment_Successfull",
+      "inputParameters": {
+        "case_param": "${deployment_ref.output.result}"
+      },
+      "type": "DECISION",
+      "caseValueParam": "case_param",
+      "decisionCases": {
+        "True": [
+          {
+            "name": "verify_deployment",
+            "taskReferenceName": "Verify_Deployment",
+            "inputParameters": {
+              "http_request": {
+                "uri": "http://172.29.112.149:8081/deployment/verify",
+                "method": "GET"
+              }
+            },
+            "type": "HTTP",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "Verify_Deployment",
+            "taskReferenceName": "Is_Verify_Deployment_Successfull",
+            "inputParameters": {
+              "case_param": "${Verify_Deployment.output.response.body.status}"
+            },
+            "type": "DECISION",
+            "caseValueParam": "case_param",
+            "decisionCases": {
+              "FAILED": [
+                {
+                  "name": "rollback",
+                  "taskReferenceName": "rollback_deployment",
+                  "inputParameters": {
+                    "chartVersion": "1.1.1"
+                  },
+                  "type": "SUB_WORKFLOW",
+                  "decisionCases": {},
+                  "defaultCase": [],
+                  "forkTasks": [],
+                  "startDelay": 0,
+                  "subWorkflowParam": {
+                    "name": "Rollback_Deployment",
+                    "version": 3
+                  },
+                  "joinOn": [],
+                  "optional": false,
+                  "defaultExclusiveJoinTask": [],
+                  "asyncComplete": false,
+                  "loopOver": []
+                }
+              ]
+            },
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      },
+      "defaultCase": [
+        {
+          "name": "rollback",
+          "taskReferenceName": "rollback_ref",
+          "inputParameters": {
+            "chartVersion": "1.1.1"
+          },
+          "type": "SUB_WORKFLOW",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "subWorkflowParam": {
+            "name": "Rollback_Deployment",
+            "version": 3
+          },
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": []
+        }
+      ],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {
+    "currentTimeOnServer": "1234",
+    "message": "1234"
+  },
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "example@email.com",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {}
+}

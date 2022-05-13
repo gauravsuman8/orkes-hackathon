@@ -1,0 +1,180 @@
+{
+  "createTime": 1652425551313,
+  "updateTime": 1652435330947,
+  "name": "Rollback_Deployment",
+  "description": "Rollback Deployment",
+  "version": 3,
+  "tasks": [
+    {
+      "name": "fork_join",
+      "taskReferenceName": "Deployment_Rollback",
+      "inputParameters": {},
+      "type": "FORK_JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Rollback_Environment_USA",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Rollback_Service_USA",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Rollback_Environment_UK",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Rollback_Service_UK",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Rollback_Environment_India",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Rollback_Service_India",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      ],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "deploy_join",
+      "taskReferenceName": "Rollback_Complete",
+      "inputParameters": {},
+      "type": "JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [
+        "Rollback_Service_USA",
+        "Rollback_Service_UK",
+        "Rollback_Service_India"
+      ],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {},
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "example@email.com",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {}
+}

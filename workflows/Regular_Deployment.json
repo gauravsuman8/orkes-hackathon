@@ -1,0 +1,202 @@
+{
+  "createTime": 1652428452249,
+  "name": "Regular_Deployment",
+  "description": "Regular Deployment",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "fork_join",
+      "taskReferenceName": "Start_Deployment",
+      "inputParameters": {},
+      "type": "FORK_JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Environment_USA",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Deploy_Service_USA",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Environment_UK",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Deploy_Service_UK",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ],
+        [
+          {
+            "name": "install_packages",
+            "taskReferenceName": "Initialize_Environment_India",
+            "inputParameters": {},
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          },
+          {
+            "name": "deploy_task",
+            "taskReferenceName": "Deploy_Service_India",
+            "inputParameters": {
+              "chartVersion": "${workflow.input.chartVersion}",
+              "acrName": "coredataplatformtest",
+              "helmChartName": "azure-vote",
+              "resourceGroup": "coredata-platform-nonprod",
+              "aksName": "epsilon-staging-aks",
+              "subscription": "platform-coredata-nonprod",
+              "namespace": "redis2",
+              "releaseName": "12",
+              "tenantId": "89359cf4-9e60-4099-80c4-775a0cfe27a7"
+            },
+            "type": "SIMPLE",
+            "decisionCases": {},
+            "defaultCase": [],
+            "forkTasks": [],
+            "startDelay": 0,
+            "joinOn": [],
+            "optional": false,
+            "defaultExclusiveJoinTask": [],
+            "asyncComplete": false,
+            "loopOver": []
+          }
+        ]
+      ],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "deploy_join",
+      "taskReferenceName": "Deployment_Completed",
+      "inputParameters": {},
+      "type": "JOIN",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [
+        "Deploy_Service_USA",
+        "Deploy_Service_UK",
+        "Deploy_Service_India"
+      ],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    },
+    {
+      "name": "inline_task",
+      "taskReferenceName": "Verify_Deployment_Completed",
+      "inputParameters": {
+        "dep1": "${Deploy_Service_USA.output.isDeploymentComplete}",
+        "dep2": "${Deploy_Service_UK.output.isDeploymentComplete}",
+        "dep3": "${Deploy_Service_India.output.isDeploymentComplete}",
+        "evaluatorType": "javascript",
+        "expression": "function e() { if ($.dep1 == \"False\" || $.dep2 == \"False\" || $.dep3 == \"False\" ){return \"False\"} else { return \"True\"}} e();"
+      },
+      "type": "INLINE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": []
+    }
+  ],
+  "inputParameters": [],
+  "outputParameters": {
+    "result": "${Verify_Deployment_Completed.output.result}"
+  },
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "example@email.com",
+  "timeoutPolicy": "ALERT_ONLY",
+  "timeoutSeconds": 0,
+  "variables": {},
+  "inputTemplate": {}
+}
